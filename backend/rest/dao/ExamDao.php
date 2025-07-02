@@ -8,7 +8,7 @@ class ExamDao {
      * constructor of dao class
      */
     public function __construct(){
-        $servername = "localhost";
+        $servername = "127.0.0.1";  // Use IP instead of localhost to force TCP
         $username = "root";
         $password = "";  // XAMPP default MySQL has no password
         $dbname = "webprep";
@@ -26,29 +26,6 @@ class ExamDao {
         }
     }
 
-    /**
-     * Get the database connection for testing purposes
-     */
-    public function getConnection() {
-        return $this->conn;
-    }
-
-    /**
-     * Test if database connection is working
-     */
-    public function testConnection() {
-        if ($this->conn === null) {
-            return false;
-        }
-        try {
-            // Simple connection test
-            $this->conn->query("SELECT 1");
-            return true;
-        } catch (Exception $e) {
-            return false;
-        }
-    }
-
     /** TODO
      * Implement DAO method used to get customer information
      */
@@ -58,7 +35,7 @@ class ExamDao {
             throw new Exception("Database connection failed");
         }
         $stmt = $this->conn->query("SELECT * FROM customers");
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $stmt ->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /** TODO
@@ -107,17 +84,17 @@ public function get_foods_report($page = 1, $limit = 10){
     $stmt = $this->conn->prepare("
         SELECT 
             f.id,
-            f.name,
-            f.brand,
+            f.name, 
+            f.brand, 
             f.image_url,
-            SUM(CASE WHEN n.name = 'energy' THEN fn.quantity ELSE 0 END) as energy,
-            SUM(CASE WHEN n.name = 'protein' THEN fn.quantity ELSE 0 END) as protein,
-            SUM(CASE WHEN n.name = 'fat' THEN fn.quantity ELSE 0 END) as fat,
-            SUM(CASE WHEN n.name = 'fiber' THEN fn.quantity ELSE 0 END) as fiber,
-            SUM(CASE WHEN n.name = 'carb' THEN fn.quantity ELSE 0 END) as carbs
+            MAX(CASE WHEN n.name = 'Energy' THEN fn.quantity END) as energy,
+            MAX(CASE WHEN n.name = 'Protein' THEN fn.quantity END) as protein,
+            MAX(CASE WHEN n.name = 'Fat' THEN fn.quantity END) as fat,
+            MAX(CASE WHEN n.name = 'Fiber' THEN fn.quantity END) as fiber,
+            MAX(CASE WHEN n.name = 'Carbs' THEN fn.quantity END) as carbs
         FROM foods f
-        JOIN food_nutrients fn ON f.id = fn.food_id
-        JOIN nutrients n ON fn.nutrient_id = n.id
+        LEFT JOIN food_nutrients fn ON f.id = fn.food_id
+        LEFT JOIN nutrients n ON fn.nutrient_id = n.id
         GROUP BY f.id, f.name, f.brand, f.image_url
         ORDER BY f.name 
         LIMIT :limit OFFSET :offset

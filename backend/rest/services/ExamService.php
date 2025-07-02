@@ -33,8 +33,8 @@ class ExamService {
     * Implement service method to return detailed list of foods
     * and total of nutrients for each food
     */
-    public function foods_report($page = 1, $limit = 10){
-        return $this->dao->get_foods_report($page, $limit);
+    public function foods_report(){
+        return $this->dao->get_foods_report();
     }
 }
 ?>

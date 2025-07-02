@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require "../vendor/autoload.php";
+require "./dao/ExamDao.php";
 require "./services/ExamService.php";
 require "./middleware/AuthMiddleware.php";
 
