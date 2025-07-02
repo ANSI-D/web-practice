@@ -16,9 +16,6 @@ Flight::route('GET /connection-check', function(){
 });
 
 Flight::route('GET /customers', function(){
-    // Require authentication for this route
-    AuthMiddleware::authenticate();
-    
     $service = new ExamService();
     Flight::json($service->get_customers());
 });
