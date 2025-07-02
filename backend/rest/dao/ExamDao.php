@@ -57,7 +57,7 @@ class ExamDao {
         if ($this->conn === null) {
             throw new Exception("Database connection failed");
         }
-        $stmt = $this->conn->query("SELECT * FROM customers WHERE YEAR(birth_date) >= 2011");
+        $stmt = $this->conn->query("SELECT * FROM customers");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 

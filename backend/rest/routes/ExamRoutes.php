@@ -4,7 +4,6 @@ Flight::route('GET /connection-check', function(){
     // This endpoint tests the database connection with a simple query
     try {
         $dao = new ExamDao();
-        // Test connection with the simplest possible query
         $result = $dao->testConnection();
         if ($result) {
             echo "Connected successfully";
@@ -17,6 +16,9 @@ Flight::route('GET /connection-check', function(){
 });
 
 Flight::route('GET /customers', function(){
+    // Require authentication for this route
+    AuthMiddleware::authenticate();
+    
     $service = new ExamService();
     Flight::json($service->get_customers());
 });
