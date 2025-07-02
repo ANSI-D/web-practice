@@ -8,7 +8,7 @@ class ExamDao {
      * constructor of dao class
      */
     public function __construct(){
-        $servername = "127.0.0.1";  // Use IP instead of localhost to force TCP
+        $servername = "localhost";
         $username = "root";
         $password = "";  // XAMPP default MySQL has no password
         $dbname = "webprep";
@@ -26,6 +26,29 @@ class ExamDao {
         }
     }
 
+    /**
+     * Get the database connection for testing purposes
+     */
+    public function getConnection() {
+        return $this->conn;
+    }
+
+    /**
+     * Test if database connection is working
+     */
+    public function testConnection() {
+        if ($this->conn === null) {
+            return false;
+        }
+        try {
+            // Simple connection test
+            $this->conn->query("SELECT 1");
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
     /** TODO
      * Implement DAO method used to get customer information
      */
@@ -34,8 +57,8 @@ class ExamDao {
         if ($this->conn === null) {
             throw new Exception("Database connection failed");
         }
-        $stmt = $this->conn->query("SELECT * FROM customers");
-        return $stmt ->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $this->conn->query("SELECT * FROM customers WHERE YEAR(birth_date) >= 2011");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /** TODO

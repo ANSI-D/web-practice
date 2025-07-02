@@ -50,11 +50,7 @@ $(document).ready(function() {
       $('#customer-meals tbody').empty();
     }
   });
-  
-  // Handle form submission for adding new customer
 });
-
-
 
 function loadCustomerMeals(customerId) {
   CustomersService.getMeals(customerId, function(meals) {
@@ -82,3 +78,31 @@ function loadCustomerMeals(customerId) {
     tbody.append('<tr><td colspan="3" class="text-center text-danger">Error loading meals. Please try again.</td></tr>');
   });
 }
+
+// ========================================================================
+// TASK 3 & 3.1: Add Customer Modal Form Submission (15 + 5 points)
+// ========================================================================
+
+// Handle form submission for adding new customer
+$('#add-customer-form').on('submit', function(e) {
+  e.preventDefault();
+  
+  const customerData = {
+    first_name: $('#first_name').val(),
+    last_name: $('#last_name').val(),
+    email: $('#email').val()
+  };
+  
+  CustomersService.add(customerData, function(response) {
+    // Close the modal
+    $('#add-customer-modal').modal('hide');
+    
+    // Clear the form
+    $('#add-customer-form')[0].reset();
+    
+    // Refresh the customers list (Task 3.1)
+    loadCustomers();
+  }, function(error) {
+    console.error('Error adding customer:', error);
+  });
+});

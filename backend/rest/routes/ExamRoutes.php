@@ -1,10 +1,16 @@
 <?php
 
 Flight::route('GET /connection-check', function(){
-    // This endpoint prints the message from constructor within ExamDao class
+    // This endpoint tests the database connection with a simple query
     try {
         $dao = new ExamDao();
-        echo "Connected successfully";
+        // Test connection with the simplest possible query
+        $result = $dao->testConnection();
+        if ($result) {
+            echo "Connected successfully";
+        } else {
+            echo "Connection failed: Database connection is null";
+        }
     } catch (Exception $e) {
         echo "Connection failed: " . $e->getMessage();
     }
