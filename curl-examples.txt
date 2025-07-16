@@ -1,12 +1,29 @@
+Add employee:
+
 curl -X POST \
   -H "Content-Type: application/json" \
   -d '{"first_name":"Jane","last_name":"Doe","email":"jane.doe@example.com","extension":"x1234","officeCode":"1","jobTitle":"Sales Rep"}' \
   http://localhost/web-programming-final/backend/rest/employee/add
 
 
+Delete employee:
 curl -X DELETE http://localhost/web-programming-final/backend/rest/employee/delete/1002
 
+Connection check:
 curl -s "http://localhost/web-programming-final/backend/rest/connection-check"
 
-
+Edit Customer:
 curl -X PUT -H "Content-Type: application/json" -d '{"first_name":"Diane","last_name":"Murphy","email":"diane.murphy@newmail.com"}' http://localhost/web-programming-final/backend/rest/employee/edit/1002
+
+Add Customer (manual customerNumber)
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"customerNumber":600,"customerName":"Manual Number Co","contactLastName":"Doe","contactFirstName":"Jane","phone":"555-1234","addressLine1":"456 Side St","addressLine2":"Apt 2","city":"Manualtown","state":"MN","postalCode":"67890","country":"Manualand","salesRepEmployeeNumber":1002,"creditLimit":12345.67}' \
+  http://localhost/web-programming-final/backend/rest/customer/add
+
+
+Add Customer (auto customerNumber, if enabled)
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"customerName":"Test Company","contactLastName":"Smith","contactFirstName":"John","phone":"123-456-7890","addressLine1":"123 Main St","addressLine2":"Suite 100","city":"Testville","state":"TS","postalCode":"12345","country":"Testland","salesRepEmployeeNumber":1002,"creditLimit":50000.00}' \
+  http://localhost/web-programming-final/backend/rest/customer/add
