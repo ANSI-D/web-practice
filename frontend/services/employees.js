@@ -5,7 +5,17 @@ var EmployeesService = {
             "Do you want to delete employee with the id " + employee_id + "?"
           ) == true
         ) {
-          console.log("TODO Perform deletion logic");
+          $.ajax({
+            url: '/web-programming-final/backend/rest/employee/delete/' + employee_id,
+            type: 'DELETE',
+            success: function(response) {
+              // Refresh the table after successful deletion
+              EmployeesService.populate_employee_table();
+            },
+            error: function(xhr) {
+              alert('Failed to delete employee.');
+            }
+          });
         }
     },
     edit_employee: function(employee_id){

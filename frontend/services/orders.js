@@ -1,29 +1,37 @@
+// OrdersService: Handles all order-related frontend logic
 var OrdersService = {
+    // Fetches the orders report from the backend API
     getOrdersReport: function(callback, error_callback) {
+        // Log the API call for debugging
         console.log('OrdersService: Calling orders report API...');
         var url = "backend/rest/orders/report";
+        // Log the full URL (with base) for debugging
         console.log('OrdersService: Full URL will be:', Constants.get_api_base_url() + url);
+        // Use RestClient utility to make the GET request
         RestClient.get(url, callback, error_callback);
     },
     
+    // Fetches the details for a specific order by order_id
     getOrderDetails: function(order_id, callback, error_callback) {
         console.log('OrdersService: Calling order details API for order:', order_id);
+        // Use RestClient utility to make the GET request for order details
         RestClient.get("backend/rest/order/details/" + order_id, callback, error_callback);
     },
 
-    // Initialize orders page functionality
+    // Initializes the orders page functionality (SPA and table loading)
     init: function() {
         $(document).ready(function() {
-            // Handle SPA page changes
+            // Listen for SPA page load events
             $(document).on('spapp.page.loaded', function(event, data) {
                 console.log('Page loaded:', data);
+                // If the loaded page is 'orders', load the orders table
                 if (data.name === 'orders') {
                     console.log('Orders page loaded, initializing...');
                     OrdersService.loadOrdersTable();
                 }
             });
             
-            // Also try to load immediately if already on orders page
+            // If already on the orders page (e.g., on refresh), load the table after a short delay
             if (window.location.hash === '#orders') {
                 console.log('Already on orders page, loading...');
                 setTimeout(function() {
@@ -33,23 +41,25 @@ var OrdersService = {
         });
     },
 
+    // Loads the orders table with data from the backend
     loadOrdersTable: function() {
         console.log('Loading orders table...');
+        // Fetch the orders report
         OrdersService.getOrdersReport(
             function(data) {
                 console.log('Orders data received:', data);
                 
-                // Clear existing table body
+                // Clear any existing rows in the table body
                 $('#order-details tbody').empty();
                 
-                // Check if data is valid
+                // Validate the data format
                 if (!data || !Array.isArray(data)) {
                     console.error('Invalid data format received:', data);
                     alert('Invalid data format received from server');
                     return;
                 }
                 
-                // Populate table with data
+                // Populate the table with each order's data
                 data.forEach(function(order) {
                     $('#order-details tbody').append(`
                         <tr>
@@ -60,7 +70,7 @@ var OrdersService = {
                     `);
                 });
                 
-                // Initialize DataTable with pagination, search, and sorting
+                // Initialize DataTable plugin for pagination, search, and sorting
                 $('#order-details').DataTable({
                     "pageLength": 10,
                     "searching": true,
@@ -72,6 +82,7 @@ var OrdersService = {
                 console.log('DataTable initialized successfully');
             },
             function(error) {
+                // Handle errors from the API call
                 console.error('Error loading orders:', error);
                 console.error('Error details:', error.responseText);
                 alert('Failed to load orders data. Check console for details.');
@@ -79,19 +90,23 @@ var OrdersService = {
         );
     },
 
+    // Shows the details for a specific order in a modal
     showOrderDetails: function(orderId) {
+        // Fetch order details from the backend
         OrdersService.getOrderDetails(orderId,
             function(data) {
-                // Clear existing table body in modal
+                // Clear any existing rows in the modal's table body
                 $('#order-details-modal tbody').empty();
                 
-                let totalBill = 0;
+                let totalBill = 0; // Track the total bill for the order
                 
-                // Populate modal table with order details
+                // Populate the modal table with each product in the order
                 data.forEach(function(item, index) {
+                    // Calculate the total for this line item
                     const itemTotal = item.quantity * parseFloat(item.price_each);
                     totalBill += itemTotal;
                     
+                    // Add a row for this product
                     $('#order-details-modal tbody').append(`
                         <tr>
                             <th scope="row">${index + 1}</th>
@@ -102,7 +117,7 @@ var OrdersService = {
                     `);
                 });
                 
-                // Add total bill row
+                // Add a final row showing the total bill for the order
                 $('#order-details-modal tbody').append(`
                     <tr>
                         <td colspan="3"><strong>Total bill</strong></td>
@@ -111,6 +126,7 @@ var OrdersService = {
                 `);
             },
             function(error) {
+                // Handle errors from the API call
                 console.error('Error loading order details:', error);
                 alert('Failed to load order details');
             }
@@ -118,7 +134,7 @@ var OrdersService = {
     }
 }
 
-// Initialize the orders functionality
+// Initialize the orders functionality when the script loads
 OrdersService.init();
 
 // Make showOrderDetails globally available for HTML onclick events
