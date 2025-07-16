@@ -52,4 +52,12 @@ class ExamService {
     public function get_order_details($order_id){
         return $this->dao->get_order_details($order_id);
     }
+
+
+    /**
+     * Add a new customer to the database
+     */
+    public function add_customer($data) {
+        return $this->dao->add_customer($data);
+    }
 }

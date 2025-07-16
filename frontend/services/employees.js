@@ -5,17 +5,7 @@ var EmployeesService = {
             "Do you want to delete employee with the id " + employee_id + "?"
           ) == true
         ) {
-          $.ajax({
-            url: '/web-programming-final/backend/rest/employee/delete/' + employee_id,
-            type: 'DELETE',
-            success: function(response) {
-              // Refresh the table after successful deletion
-              EmployeesService.populate_employee_table();
-            },
-            error: function(xhr) {
-              alert('Failed to delete employee.');
-            }
-          });
+          console.log("TODO Perform deletion logic");
         }
     },
     edit_employee: function(employee_id){
@@ -54,30 +44,6 @@ var EmployeesService = {
     },
     init: function() {
         EmployeesService.populate_employee_table();
-        // Attach submit handler for the edit employee modal form
-        $(document).on('submit', '#edit-employee-modal form', function(e) {
-            e.preventDefault(); // Prevent default form submission and page redirect
-            var employee_id = $('#employeeNumber').val();
-            var data = {
-                first_name: $('#firstName').val(),
-                last_name: $('#lastName').val(),
-                email: $('#email').val()
-            };
-            $.ajax({
-                url: '/web-programming-final/backend/rest/employee/edit/' + employee_id,
-                type: 'PUT',
-                contentType: 'application/json',
-                data: JSON.stringify(data),
-                success: function(response) {
-                    // Hide modal, refresh table
-                    $('#edit-employee-modal').modal('hide');
-                    EmployeesService.populate_employee_table();
-                },
-                error: function(xhr) {
-                    alert('Failed to save changes.');
-                }
-            });
-        });
     }
 }
 

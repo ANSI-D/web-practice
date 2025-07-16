@@ -36,12 +36,11 @@ class ExamDao
               e.employeeNumber as id,
               CONCAT(e.firstName, ' ', e.lastName) as full_name,
               e.email,
-              SUM(p.amount) as total
+              COALESCE(SUM(p.amount), 0) as total
             FROM employees e
             LEFT JOIN customers c ON e.employeeNumber = c.salesRepEmployeeNumber
             LEFT JOIN payments p ON c.customerNumber = p.customerNumber
-            GROUP BY e.employeeNumber
-            order by total desc";
+            GROUP BY e.employeeNumber, e.firstName, e.lastName, e.email";
     
     $stmt = $this->conn->prepare($sql);
     $stmt->execute();
@@ -53,23 +52,12 @@ class ExamDao
    */
   public function delete_employee($employee_id) {
     try {
-      $sql = "DELETE FROM employees WHERE employeeNumber = :employee_id";
+      $sql = "DELETE FROM employees WHERE employeeNumber = ?";
       $stmt = $this->conn->prepare($sql);
-      $stmt->execute(['employee_id' => $employee_id]);
+      $stmt->execute([$employee_id]);
       return $stmt->rowCount() > 0;
     } catch (PDOException $e) {
       // Return false for any database constraint issues
-      return false;
-    }
-  }
-
-   public function get_employee($employee_id) {
-    try {
-      $sql = "SELECT * FROM employees WHERE employeeNumber = :employee_id";
-      $stmt = $this->conn->prepare($sql);
-      $stmt->execute(['employee_id' => $employee_id]);
-      return $stmt->fetch(PDO::FETCH_ASSOC); // <-- Return the employee data
-    } catch (PDOException $e) {
       return false;
     }
   }
@@ -119,5 +107,37 @@ class ExamDao
     $stmt = $this->conn->prepare($sql);
     $stmt->execute([$order_id]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  /**
+   * Add a new customer to the database
+   */
+  public function add_customer($data) {
+    // Get the next available customerNumber
+    $stmt = $this->conn->query("SELECT MAX(customerNumber) AS max_num FROM customers");
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    $nextCustomerNumber = $row['max_num'] + 1;
+
+    $sql = "INSERT INTO customers (customerNumber, customerName, contactLastName, contactFirstName, phone, addressLine1, addressLine2, city, state, postalCode, country, salesRepEmployeeNumber, creditLimit) VALUES (:customerNumber, :customerName, :contactLastName, :contactFirstName, :phone, :addressLine1, :addressLine2, :city, :state, :postalCode, :country, :salesRepEmployeeNumber, :creditLimit)";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->execute([
+      'customerNumber' => $nextCustomerNumber,
+      'customerName' => $data['customerName'],
+      'contactLastName' => $data['contactLastName'],
+      'contactFirstName' => $data['contactFirstName'],
+      'phone' => $data['phone'],
+      'addressLine1' => $data['addressLine1'],
+      'addressLine2' => $data['addressLine2'],
+      'city' => $data['city'],
+      'state' => $data['state'],
+      'postalCode' => $data['postalCode'],
+      'country' => $data['country'],
+      'salesRepEmployeeNumber' => $data['salesRepEmployeeNumber'],
+      'creditLimit' => $data['creditLimit']
+    ]);
+    // Return the newly created customer
+    $stmt = $this->conn->prepare("SELECT * FROM customers WHERE customerNumber = ?");
+    $stmt->execute([$nextCustomerNumber]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 }

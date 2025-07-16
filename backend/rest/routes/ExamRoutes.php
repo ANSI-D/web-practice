@@ -34,18 +34,13 @@ Flight::route('DELETE /employee/delete/@employee_id', function ($employee_id) {
      * 5 points
      */
     $examService = Flight::examService();
-    $success = $examService->delete_employee($employee_id);
-    if ($success) {
-        Flight::json(['message' => 'Employee deleted successfully']);
-    } else {
-        Flight::json(['message' => 'Employee not found or could not be deleted'], 404);
-    }
-});
-
-Flight::route('GET /employee/@employee_id', function ($employee_id) {
-    $examService = Flight::examService();
-    $result = $examService->get_employee($employee_id);
-    Flight::json($result);
+    $examService->delete_employee($employee_id);
+    
+//    if ($success) {
+//        Flight::json(['message' => 'Employee deleted successfully']);
+//    } else {
+//        Flight::json(['message' => 'Employee not found or could not be deleted'], 404);
+//    }
 });
 
 Flight::route('PUT /employee/edit/@employee_id', function ($employee_id) {
@@ -97,5 +92,17 @@ Flight::route('GET /order/details/@order_id', function ($order_id) {
      */
     $examService = Flight::examService();
     $result = $examService->get_order_details($order_id);
+    Flight::json($result);
+});
+
+Flight::route('POST /customer/add', function () {
+    /**
+     * This endpoint adds a new customer to the database.
+     * Expects JSON body with all required customer fields.
+     * Returns the newly created customer as JSON.
+     */
+    $examService = Flight::examService();
+    $data = Flight::request()->data->getData();
+    $result = $examService->add_customer($data);
     Flight::json($result);
 });

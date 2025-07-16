@@ -1,0 +1,12 @@
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"first_name":"Jane","last_name":"Doe","email":"jane.doe@example.com","extension":"x1234","officeCode":"1","jobTitle":"Sales Rep"}' \
+  http://localhost/web-programming-final/backend/rest/employee/add
+
+
+curl -X DELETE http://localhost/web-programming-final/backend/rest/employee/delete/1002
+
+curl -s "http://localhost/web-programming-final/backend/rest/connection-check"
+
+
+curl -X PUT -H "Content-Type: application/json" -d '{"first_name":"Diane","last_name":"Murphy","email":"diane.murphy@newmail.com"}' http://localhost/web-programming-final/backend/rest/employee/edit/1002
