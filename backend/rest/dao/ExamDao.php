@@ -113,15 +113,10 @@ class ExamDao
    * Add a new customer to the database
    */
   public function add_customer($data) {
-    // Get the next available customerNumber
-    $stmt = $this->conn->query("SELECT MAX(customerNumber) AS max_num FROM customers");
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    $nextCustomerNumber = $row['max_num'] + 1;
-
     $sql = "INSERT INTO customers (customerNumber, customerName, contactLastName, contactFirstName, phone, addressLine1, addressLine2, city, state, postalCode, country, salesRepEmployeeNumber, creditLimit) VALUES (:customerNumber, :customerName, :contactLastName, :contactFirstName, :phone, :addressLine1, :addressLine2, :city, :state, :postalCode, :country, :salesRepEmployeeNumber, :creditLimit)";
     $stmt = $this->conn->prepare($sql);
     $stmt->execute([
-      'customerNumber' => $nextCustomerNumber,
+      'customerNumber' => $data['customerNumber'],
       'customerName' => $data['customerName'],
       'contactLastName' => $data['contactLastName'],
       'contactFirstName' => $data['contactFirstName'],
@@ -137,7 +132,7 @@ class ExamDao
     ]);
     // Return the newly created customer
     $stmt = $this->conn->prepare("SELECT * FROM customers WHERE customerNumber = ?");
-    $stmt->execute([$nextCustomerNumber]);
+    $stmt->execute([$data['customerNumber']]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 }
