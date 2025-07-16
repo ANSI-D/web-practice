@@ -27,3 +27,5 @@ curl -X POST \
   -H "Content-Type: application/json" \
   -d '{"customerName":"Test Company","contactLastName":"Smith","contactFirstName":"John","phone":"123-456-7890","addressLine1":"123 Main St","addressLine2":"Suite 100","city":"Testville","state":"TS","postalCode":"12345","country":"Testland","salesRepEmployeeNumber":1002,"creditLimit":50000.00}' \
   http://localhost/web-programming-final/backend/rest/customer/add
+
+On windows: curl.exe -x ...
