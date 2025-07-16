@@ -52,15 +52,40 @@ class ExamDao
    */
   public function delete_employee($employee_id) {
     try {
+      $this->conn->exec("SET FOREIGN_KEY_CHECKS = 0");
       $sql = "DELETE FROM employees WHERE employeeNumber = ?";
       $stmt = $this->conn->prepare($sql);
       $stmt->execute([$employee_id]);
       return $stmt->rowCount() > 0;
+      $this->conn->exec("SET FOREIGN_KEY_CHECKS = 1");
     } catch (PDOException $e) {
       // Return false for any database constraint issues
+      $this->conn->exec("SET FOREIGN_KEY_CHECKS = 1");
       return false;
     }
   }
+
+  /* Alternative syntax:
+    public function delete_employee($employee_id) {
+    try {
+        // Disable foreign key checks
+        $this->conn->exec("SET FOREIGN_KEY_CHECKS = 0");
+        
+        $stmt = $this->conn->prepare("DELETE FROM employees WHERE employeeNumber = :employeeNumber");
+        $stmt->bindParam(':employeeNumber', $employee_id, PDO::PARAM_INT);
+        $result = $stmt->execute();
+        
+        // Re-enable foreign key checks
+        $this->conn->exec("SET FOREIGN_KEY_CHECKS = 1");
+        
+        return $result;
+    } catch (Exception $e) {
+        // Make sure to re-enable foreign key checks even if there's an error
+        $this->conn->exec("SET FOREIGN_KEY_CHECKS = 1");
+        throw new Exception("Error deleting employee");
+    }
+}
+*/
 
   /** TODO
    * Implement DAO method used to edit employee data
@@ -136,3 +161,4 @@ class ExamDao
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 }
+
